@@ -53,15 +53,16 @@ public class MainWindow extends JFrame {
 	
 	public void Generate(int a) {
 		this.remove(grid);
+		SwingUtilities.updateComponentTreeUI(this);
 		this.grid = new Grid(a);
 		this.add(grid, BorderLayout.CENTER);
 		SwingUtilities.updateComponentTreeUI(this);
 	}
 	
 	public void updateGrid() throws InterruptedException {
-		Grid grid2 = new Grid();
-		for (int i = 0; i < grid.getS(); i++) {
-			for (int j = 0; j < grid.getS(); j++) {
+		Grid grid2 = this.grid;
+		for (int i = 0; i < grid.getS()-1; i++) {
+			for (int j = 0; j < grid.getS()-1; j++) {
 				if (grid.aliveNeighbor(grid.getCase(i, j)) < 1 || grid.aliveNeighbor(grid.getCase(i, j)) > 3) grid2.getCase(i, j).setAlive(false);
 				else if (grid.aliveNeighbor(grid.getCase(i, j)) == 3) grid2.getCase(i, j).setAlive(true);
 				else if (grid.aliveNeighbor(grid.getCase(i, j)) == 2) grid2.getCase(i, j).setAlive(grid.getCase(i, j).isAlive());
@@ -108,21 +109,25 @@ class ButtonActionListener implements ActionListener {
 		}
 		
 		else if (e.getActionCommand().equals("Run !")) {
-			while(mw.isRunning()){
-				try {
-					mw.updateGrid();
-					mw.revalidate();
-					Thread.sleep(1000);
-				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+			Thread r = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					while(mw.isRunning()){
+						try {
+							mw.updateGrid();
+							// mw.revalidate();
+							//Thread.sleep(1000);
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					}
 				}
-			}
+			});
+			r.start();
 		}
-		
 		else if (e.getActionCommand().equals("Stop/Go")) {
-			mw.setRunning(false);
+			mw.setRunning(mw.isRunning()?false:true);
 		}
 	}
-	
 }

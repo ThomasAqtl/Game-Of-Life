@@ -13,8 +13,8 @@ public class Grid extends JPanel {
 	private int size;
 	
 	public Grid() {
-		int ds = 15;
-		this.size = 15;
+		int ds = 50;
+		this.size = 50;
 		this.grid = new Case[ds][ds];
 		setOpaque(false);
 		setLayout(new GridLayout(ds,ds));
@@ -79,6 +79,63 @@ public class Grid extends JPanel {
 			}
 			r = r + (grid[a][b-1].isAlive() ? 1 : 0);
 			r = r + (grid[a][b+1].isAlive() ? 1 : 0);
+		}
+		else if (a == 0 && b == 0) {
+			r = r + (grid[a][b+1].isAlive() ? 1 : 0);
+			r = r + (grid[a+1][b+1].isAlive() ? 1 : 0);
+			r = r + (grid[a+1][b].isAlive() ? 1 : 0);
+			
+		}
+		
+		else if (a == 0 && b == this.getS()-1) {
+			r = r + (grid[a][b-1].isAlive() ? 1 : 0);
+			r = r + (grid[a+1][b-1].isAlive() ? 1 : 0);
+			r = r + (grid[a+1][b].isAlive() ? 1 : 0);
+		}
+		
+		else if (a == this.getS()-1 && b == this.getS()-1) {
+			r = r + (grid[a-1][b].isAlive() ? 1 : 0);
+			r = r + (grid[a-1][b-1].isAlive() ? 1 : 0);
+			r = r + (grid[a][b-1].isAlive() ? 1 : 0);
+		}
+		
+		else if (a == this.getS() && b == 0) {
+			r = r + (grid[a-1][b].isAlive() ? 1 : 0);
+			r = r + (grid[a-1][b+1].isAlive() ? 1 : 0);
+			r = r + (grid[a][b+1].isAlive() ? 1 : 0);
+			
+		}
+		
+		else if (a == 0) {
+			for (int k = -1; k < 2; k++) {
+				r = r + (grid[a][a+k+c.gety()].isAlive() ? 1 : 0);
+			}
+			r = r + (grid[a][a-1+c.gety()].isAlive() ? 1 : 0);
+			r = r + (grid[a][a+1+c.gety()].isAlive() ? 1 : 0);
+		}
+		
+		else if (a == this.getS()) {
+			for (int k = -1; k < 2; k++) {
+				r = r + (grid[a-1][a+k+c.gety()].isAlive() ? 1 : 0);
+			}
+			r = r + (grid[a][a-1+c.gety()].isAlive() ? 1 : 0);
+			r = r + (grid[a][a+1+c.gety()].isAlive() ? 1 : 0);
+		}
+		
+		else if (b == 0) {
+			for (int k = -1; k < 2; k++) {
+				r = r + (grid[b+1][b+k+c.getx()].isAlive() ? 1 : 0);
+			}
+			r = r + (grid[b][b-1+c.getx()].isAlive() ? 1 : 0);
+			r = r + (grid[b][b+1+c.getx()].isAlive() ? 1 : 0);
+		}
+		
+		else if (b == this.getS()) {
+			for (int k = -1; k < 2; k++) {
+				r = r + (grid[b][b+k+c.getx()].isAlive() ? 1 : 0);
+			}
+			r = r + (grid[b][b-1+c.getx()].isAlive() ? 1 : 0);
+			r = r + (grid[b][b+1+c.getx()].isAlive() ? 1 : 0);
 		}
 		//System.out.println(r);
 		return r;
