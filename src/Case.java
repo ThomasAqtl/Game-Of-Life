@@ -20,7 +20,7 @@ public class Case extends JPanel {
 		
 		public void setAlive(boolean a) {
 			this.alive = a;
-			this.color = a ? Color.WHITE : Color.BLACK;
+			this.color = (a ? Color.WHITE : Color.BLACK);
 			setBackground(color);
 		}
 		

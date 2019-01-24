@@ -99,7 +99,7 @@ public class Grid extends JPanel {
 			r = r + (grid[a][b-1].isAlive() ? 1 : 0);
 		}
 		
-		else if (a == this.getS() && b == 0) {
+		else if (a == this.getS()-1 && b == 0) {
 			r = r + (grid[a-1][b].isAlive() ? 1 : 0);
 			r = r + (grid[a-1][b+1].isAlive() ? 1 : 0);
 			r = r + (grid[a][b+1].isAlive() ? 1 : 0);
@@ -108,34 +108,34 @@ public class Grid extends JPanel {
 		
 		else if (a == 0) {
 			for (int k = -1; k < 2; k++) {
-				r = r + (grid[a][a+k+c.gety()].isAlive() ? 1 : 0);
+				r = r + (grid[a+1][k+c.gety()].isAlive() ? 1 : 0);
 			}
-			r = r + (grid[a][a-1+c.gety()].isAlive() ? 1 : 0);
-			r = r + (grid[a][a+1+c.gety()].isAlive() ? 1 : 0);
+			r = r + (grid[a][b-1].isAlive() ? 1 : 0);
+			r = r + (grid[a][b+1].isAlive() ? 1 : 0);
 		}
 		
-		else if (a == this.getS()) {
+		else if (a == this.getS()-1) {
 			for (int k = -1; k < 2; k++) {
-				r = r + (grid[a-1][a+k+c.gety()].isAlive() ? 1 : 0);
+				r = r + (grid[a-1][b+k].isAlive() ? 1 : 0);
 			}
-			r = r + (grid[a][a-1+c.gety()].isAlive() ? 1 : 0);
-			r = r + (grid[a][a+1+c.gety()].isAlive() ? 1 : 0);
+			r = r + (grid[a][b-1].isAlive() ? 1 : 0);
+			r = r + (grid[a][b+1].isAlive() ? 1 : 0);
 		}
 		
 		else if (b == 0) {
 			for (int k = -1; k < 2; k++) {
-				r = r + (grid[b+1][b+k+c.getx()].isAlive() ? 1 : 0);
+				r = r + (grid[a+k][b+1].isAlive() ? 1 : 0);
 			}
-			r = r + (grid[b][b-1+c.getx()].isAlive() ? 1 : 0);
-			r = r + (grid[b][b+1+c.getx()].isAlive() ? 1 : 0);
+			r = r + (grid[a-1][b].isAlive() ? 1 : 0);
+			r = r + (grid[a+1][b].isAlive() ? 1 : 0);
 		}
 		
-		else if (b == this.getS()) {
+		else if (b == this.getS()-1) {
 			for (int k = -1; k < 2; k++) {
-				r = r + (grid[b][b+k+c.getx()].isAlive() ? 1 : 0);
+				r = r + (grid[a+k][b-1].isAlive() ? 1 : 0);
 			}
-			r = r + (grid[b][b-1+c.getx()].isAlive() ? 1 : 0);
-			r = r + (grid[b][b+1+c.getx()].isAlive() ? 1 : 0);
+			r = r + (grid[a-1][b].isAlive() ? 1 : 0);
+			r = r + (grid[a+1][b].isAlive() ? 1 : 0);
 		}
 		//System.out.println(r);
 		return r;

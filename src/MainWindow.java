@@ -15,12 +15,12 @@ public class MainWindow extends JFrame {
 	
 	private boolean running = true;
 	
-	private Grid grid = new Grid();
+	public Grid grid = new Grid();
 	private JPanel buttons = new JPanel();
 	
 	private JButton generateB = new JButton("Generate");
 	private JButton runB = new JButton("Run !");
-	private JButton stopGo = new JButton("Stop/Go");
+	public JButton stopGo = new JButton("Stop/Go");
 	
 	private JSpinner js = new JSpinner();
 	
@@ -38,6 +38,7 @@ public class MainWindow extends JFrame {
 		buttons.add(generateB);
 		runB.addActionListener(new ButtonActionListener(this));
 		buttons.add(runB);
+		stopGo.setEnabled(false);
 		buttons.add(stopGo);
 		add(buttons, BorderLayout.NORTH);
 		
@@ -60,12 +61,18 @@ public class MainWindow extends JFrame {
 	}
 	
 	public void updateGrid() throws InterruptedException {
-		Grid grid2 = this.grid;
+		Grid grid2 = new Grid(grid.getS());
 		for (int i = 0; i < grid.getS()-1; i++) {
 			for (int j = 0; j < grid.getS()-1; j++) {
-				if (grid.aliveNeighbor(grid.getCase(i, j)) < 1 || grid.aliveNeighbor(grid.getCase(i, j)) > 3) grid2.getCase(i, j).setAlive(false);
-				else if (grid.aliveNeighbor(grid.getCase(i, j)) == 3) grid2.getCase(i, j).setAlive(true);
-				else if (grid.aliveNeighbor(grid.getCase(i, j)) == 2) grid2.getCase(i, j).setAlive(grid.getCase(i, j).isAlive());
+				if (grid.getCase(i, j).isAlive()) {
+					if (grid.aliveNeighbor(grid.getCase(i, j)) < 1 || grid.aliveNeighbor(grid.getCase(i, j)) > 3) grid2.getCase(i, j).setAlive(false);
+					else if (grid.aliveNeighbor(grid.getCase(i, j)) == 3) grid2.getCase(i, j).setAlive(true);
+					else if (grid.aliveNeighbor(grid.getCase(i, j)) == 2) grid2.getCase(i, j).setAlive(grid.getCase(i, j).isAlive());
+				}
+				else {
+					if (grid.aliveNeighbor(grid.getCase(i, j)) == 3) grid2.getCase(i, j).setAlive(true);
+					else if (grid.aliveNeighbor(grid.getCase(i, j)) == 2) grid2.getCase(i, j).setAlive(grid.getCase(i, j).isAlive());
+				}
 			}
 		}
 		displayNewGrid(grid2);
@@ -73,6 +80,7 @@ public class MainWindow extends JFrame {
 	
 	public void displayNewGrid(Grid g) {
 		this.remove(grid);
+		SwingUtilities.updateComponentTreeUI(this);
 		this.grid = g;
 		this.add(grid, BorderLayout.CENTER);
 		SwingUtilities.updateComponentTreeUI(this);
@@ -96,6 +104,7 @@ public class MainWindow extends JFrame {
 class ButtonActionListener implements ActionListener {
 	
 	MainWindow mw;
+	public static volatile boolean running = true;
 	
 	public ButtonActionListener(MainWindow m) {
 		this.mw = m;
@@ -103,31 +112,50 @@ class ButtonActionListener implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		Thread r = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				while(mw.isRunning()){
+					try {
+						Grid grid2 = new Grid(mw.grid.getS());
+						for (int i = 0; i < mw.grid.getS()-1; i++) {
+							for (int j = 0; j < mw.grid.getS()-1; j++) {
+								if (mw.grid.getCase(i, j).isAlive()) {
+									if (mw.grid.aliveNeighbor(mw.grid.getCase(i, j)) < 1 || mw.grid.aliveNeighbor(mw.grid.getCase(i, j)) > 3) grid2.getCase(i, j).setAlive(false);
+									else if (mw.grid.aliveNeighbor(mw.grid.getCase(i, j)) == 3) grid2.getCase(i, j).setAlive(true);
+									else if (mw.grid.aliveNeighbor(mw.grid.getCase(i, j)) == 2) grid2.getCase(i, j).setAlive(mw.grid.getCase(i, j).isAlive());
+								}
+								else {
+									if (mw.grid.aliveNeighbor(mw.grid.getCase(i, j)) == 3) grid2.getCase(i, j).setAlive(true);
+									else if (mw.grid.aliveNeighbor(mw.grid.getCase(i, j)) == 2) grid2.getCase(i, j).setAlive(mw.grid.getCase(i, j).isAlive());
+								}
+							}
+						}
+						mw.remove(mw.grid);
+						mw.revalidate();
+						mw.grid = grid2;
+						mw.add(mw.grid,BorderLayout.CENTER);
+						mw.revalidate();
+						Thread.sleep(50);
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+			}
+		});
+		
 		if (e.getActionCommand().equals("Generate")) {
 			int s = (int)mw.getjs().getValue();
 			mw.Generate(s);
 		}
 		
 		else if (e.getActionCommand().equals("Run !")) {
-			Thread r = new Thread(new Runnable() {
-				@Override
-				public void run() {
-					while(mw.isRunning()){
-						try {
-							mw.updateGrid();
-							// mw.revalidate();
-							//Thread.sleep(1000);
-						} catch (InterruptedException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-					}
-				}
-			});
+			mw.stopGo.setEnabled(true);
 			r.start();
 		}
 		else if (e.getActionCommand().equals("Stop/Go")) {
-			mw.setRunning(mw.isRunning()?false:true);
+			r.interrupt();
 		}
 	}
 }
